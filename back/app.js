@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const User = require('./models/user');  
 const authRoutes = require('./routes/user');
+const paht = require('path');
 const app = express(); 
 
 app.use(express.json());
@@ -14,7 +15,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('./routes/auth', authRoutes);
+app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/api/auth', authRoutes);
 
 app.use((req, res, next) => {
   res.json({ message: 'Votre requête a bien été reçue !' });

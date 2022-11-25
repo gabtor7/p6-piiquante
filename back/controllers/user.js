@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 exports.signup = (req, res, next) => {
@@ -9,33 +10,33 @@ exports.signup = (req, res, next) => {
             password: hash
         });
         user.save()
-        .then(() => res.status(201).json({message: "Utilisateur enregistré !"}))
-        .catch(error => res.status(400).json({error}));
+        .then(() => res.status(201).json({ message: "Utilisateur enregistré !" }))
+        .catch(error => res.status(400).json({ error }));
     })
-    .catch(error => res.status(400).json({error}))
+    .catch(error => res.status(500).json({ error }));
 };
 
 exports.login = (req, res, next) => {
     User.findOne({email: req.body.email})
     .then(user => {
         if(!user){
-            return res.status(401).json({message: "Aucun utilisateur n'est associé à cette adresse email."});
+            return res.status(401).json({ message: "Aucun utilisateur n'est associé à cette adresse email." });
         }
         bcrypt.compare(req.body.password, user.password)
         .then(valid => {
             if(!valid){
-                return res.status(401).json({message: "Mot de passe erroné."});
+                return res.status(401).json({ message: "Mot de passe erroné." });
             }
-            res.status(200).json({
+            res.status(201).json({
                 userId: user._id,
                 token: jwt.sign(
                     {userId: user._id},
-                    'RANDOM_TOKEN_SECRET', 
-                    {expiresIn: '24h' }
+                    'a7c3b5d5c6e0d8abdc', 
+                    {expiresIn: '24h'}
                 )
-            });
+            });          
         })
-        .catch(error => res.status(500).json({error}));
+        .catch(error => res.status(500).json({ error }));   
     })
-    .catch(error => res.status(500).json({error}));
+    .catch(error => res.status(500).json({ error }));
 };

@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
+const user = require('../middleware/user');
+const multer = require('..middleware/multer-config');
 const userController = require('../controllers/user');
 
-// CREATE user - le mot de passe devra être hashé
+// CREATE user
 router.post('/signup', userController.signup);
 
-// READ user (Repris du cours. Pour la connexion ?)
-router.get('/login', userController.login);
+// READ user
+router.post('/login', userController.login);
 
 module.exports = router;
