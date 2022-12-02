@@ -1,11 +1,22 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const User = require('./models/user');  
-const authRoutes = require('./routes/user');
-const paht = require('path');
-const app = express(); 
+const User = require('./models/user'); 
+const bodyParser = require('body-parser');
 
+const userRoutes = require('./routes/user');
+const sauceRoutes = require('./routes/sauce');
+
+const path = require('path');
+const { parseArgs } = require('util');
+
+mongoose.connect(process.env.MONGODB_PATH,
+  { useNewUrlParser: true,
+    useUnifiedTopology: true })
+  .then(() => console.log('Connexion à MongoDB réussie !'))
+  .catch(() => console.log('Connexion à MongoDB échouée !'));
+  
+const app = express();   
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -15,19 +26,14 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(bodyParser.json());
 app.use('/images', express.static(path.join(__dirname, 'images')));
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', userRoutes);
+app.use('/api/sauces', sauceRoutes);
 
 app.use((req, res, next) => {
   res.json({ message: 'Votre requête a bien été reçue !' });
   next(); 
 });
-
-mongoose.connect(process.env.MONGODB_PATH,
-  { useNewUrlParser: true,
-    useUnifiedTopology: true })
-  .then(() => console.log('Connexion à MongoDB réussie !'))
-  .catch(() => console.log('Connexion à MongoDB échouée !'));
-
 
 module.exports = app;
